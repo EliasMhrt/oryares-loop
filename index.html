@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Oryares Loop v4.0 // 3D Neural YouTube Looper</title>
+  <link rel="icon" type="image/png" href="oryares.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="scanline-overlay"></div>
+  <div class="cinematic-vignette" aria-hidden="true"></div>
+
+  <audio id="bgm" loop preload="auto" src="Interstellar%20Main%20Theme%20-%20Extra%20Extended%20-%20Soundtrack%20by%20%20Hans%20Zimmer%20-%20Cin%C3%A9mavore.mp3"></audio>
+
+  <header class="app-header">
+    <div class="logo-3d">
+      <h1>Oryares<span>LOOP</span></h1>
+      <div class="version-tag">v4.0 // 3D</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="float-handle" id="floatHandle" role="button" tabindex="0" aria-label="Drag to move floating panel">
+      <span class="float-handle-grip" aria-hidden="true"></span>
+      <span>DRAG TO MOVE</span>
+    </div>
+    <div class="controls-panel">
+      <div class="input-group video-url-group">
+        <label for="videoInput">VIDEO URL / ID</label>
+        <div class="input-wrapper">
+          <span class="input-icon">&#9654;</span>
+          <input type="text" id="videoInput" placeholder="Paste YouTube link or video ID...">
+        </div>
+      </div>
+
+      <div class="time-controls">
+        <div class="input-group">
+          <label for="startTime">START TIME</label>
+          <div class="input-wrapper time-wrapper">
+            <input type="text" id="startTime" class="time-input" value="0:00">
+            <div class="nudge-buttons">
+              <button class="nudge-btn" data-target="startTime" data-dir="-">-</button>
+              <button class="nudge-btn" data-target="startTime" data-dir="+">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="time-separator">
+          <div class="separator-line"></div>
+          <span class="separator-label">LOOP</span>
+          <div class="separator-line"></div>
+        </div>
+        <div class="input-group">
+          <label for="endTime">END TIME</label>
+          <div class="input-wrapper time-wrapper">
+            <input type="text" id="endTime" class="time-input" value="1:00">
+            <div class="nudge-buttons">
+              <button class="nudge-btn" data-target="endTime" data-dir="-">-</button>
+              <button class="nudge-btn" data-target="endTime" data-dir="+">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="loop-progress-bar">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+          <div class="progress-marker start-marker" id="startMarker"></div>
+          <div class="progress-marker end-marker" id="endMarker"></div>
+        </div>
+        <div class="progress-times">
+          <span id="currentTimeDisplay">0:00</span>
+          <span id="loopDurationDisplay">Loop: 1:00</span>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button id="loadBtn" class="cyber-btn primary">
+          <span class="btn-icon">&#9654;</span> LOAD & LOOP
+        </button>
+        <button id="voiceBtn" class="cyber-btn secondary">
+          <span class="btn-icon">&#127908;</span> VOICE CMD
+        </button>
+        <button id="floatBtn" class="cyber-btn secondary">
+          <span class="btn-icon">&#128250;</span> FLOAT MODE
+        </button>
+        <button id="musicBtn" class="cyber-btn secondary" aria-pressed="false" title="Toggle background music (B)">
+          <span class="btn-icon music-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="btn-label">MUSIC: ON</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="player-wrapper">
+      <div id="player"></div>
+      <div class="player-overlay active" id="playerOverlay">
+        <div class="loading-ring">
+          <div class="ring-segment"></div>
+          <div class="ring-segment"></div>
+          <div class="ring-segment"></div>
+        </div>
+        <span id="playerOverlayText">PASTE A LINK TO BEGIN</span>
+        <div class="overlay-actions" id="overlayActions" hidden>
+          <button type="button" id="watchOnYoutubeBtn" class="overlay-action">WATCH ON YOUTUBE &#8599;</button>
+          <button type="button" id="testEmbedBtn" class="overlay-action">TEST EMBED &#8599;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="command-deck">
+      <div class="hotkey-hud">
+        <div class="hotkey-left">
+          <span class="hotkey-title">&#9211; Hotkeys</span>
+          <span><b>Tip:</b> run <b>node server.js</b> in this folder &mdash; it opens the looper at <b>http://localhost:8000</b></span>
+          <span><kbd>[</kbd> / <kbd>]</kbd> Nudge Start/End (&plusmn;1s)</span>
+          <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> Volume</span>
+          <span><kbd>Space</kbd> / <kbd>K</kbd> Play/Pause</span>
+          <span><kbd>F</kbd> Fullscreen</span>
+          <span><kbd>M</kbd> Mute</span>
+          <span><kbd>B</kbd> Background music</span>
+          <span><kbd>J</kbd> / <kbd>L</kbd> Seek 10s</span>
+          <span><kbd>&larr;</kbd> / <kbd>&rarr;</kbd> Seek 5s</span>
+          <span><kbd>0-9</kbd> Jump to percent</span>
+          <span>Scroll on time inputs to adjust</span>
+        </div>
+        <div class="hotkey-right">
+          <span id="voiceStatus" class="voice-status">Voice: STANDBY</span>
+        </div>
+      </div>
+
+      <div class="voice-command-guide">
+        <div class="voice-guide-header">
+          <span class="voice-guide-title">VOICE COMMANDS</span>
+          <span class="voice-guide-hint">Click VOICE CMD to enable, then say &quot;Hey Looper&quot; (or a similar wake phrase) + a command</span>
+        </div>
+        <div class="voice-command-grid">
+          <div class="voice-command"><strong>HEY LOOPER / HEY SUPER</strong><span>Wake phrase</span></div>
+          <div class="voice-command"><strong>PLAY</strong><span>Resume video</span></div>
+          <div class="voice-command"><strong>PAUSE / STOP</strong><span>Pause video</span></div>
+          <div class="voice-command"><strong>RESET / RESTART</strong><span>Seek to loop start</span></div>
+          <div class="voice-command"><strong>START</strong><span>Seek to loop start</span></div>
+          <div class="voice-command"><strong>LOUDER / VOLUME UP</strong><span>Raise volume</span></div>
+          <div class="voice-command"><strong>QUIETER / VOLUME DOWN</strong><span>Lower volume</span></div>
+          <div class="voice-command"><strong>MUTE / UNMUTE</strong><span>Toggle audio</span></div>
+          <div class="voice-command"><strong>LOAD / GO</strong><span>Load the pasted link</span></div>
+          <div class="voice-command"><strong>FLOAT</strong><span>Toggle floating mode</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="interstellar-title" aria-hidden="true">INTERSTELLAR</div>
+    <span>Oryares LOOP v4.0 &mdash; Built for precision looping</span>
+    <span>© 2026 Oryares. All rights reserved.</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
