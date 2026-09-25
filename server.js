@@ -6,7 +6,10 @@
 
        node server.js
 
-   It opens the page for you and serves nothing but files from this folder. */
+   It opens the page for you and serves nothing but files from this folder.
+
+   The site itself lives in public/ because that is the folder Vercel deploys.
+   This server mounts it at the root so localhost:8000 works the same way. */
 
 const http = require('http');
 const fs = require('fs');
@@ -15,7 +18,7 @@ const { exec } = require('child_process');
 
 const HOST = '127.0.0.1';
 const PORT = Number(process.env.PORT) || 8000;
-const ROOT = __dirname;
+const ROOT = path.join(__dirname, 'public');
 const URL_LOCAL = `http://${HOST}:${PORT}`;
 
 const MIME = {
